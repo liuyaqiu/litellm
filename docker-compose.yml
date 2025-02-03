@@ -29,6 +29,8 @@ services:
       POSTGRES_DB: litellm
       POSTGRES_USER: llmproxy
       POSTGRES_PASSWORD: dbpassword9090
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Added this volume mount
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d litellm -U llmproxy"]
       interval: 1s
@@ -51,6 +53,7 @@ services:
 volumes:
   prometheus_data:
     driver: local
-
+  postgres_data:  # Added this volume declaration
+    driver: local
 
 # ...rest of your docker-compose config if any
