@@ -57,6 +57,9 @@ from .common_utils import (
 openaiOSeriesConfig = OpenAIOSeriesConfig()
 
 
+def is_azure_ai_model(api_base: Optional[str]) -> bool:
+    return api_base is not None and "services.ai.azure.com" in api_base
+
 class MistralEmbeddingConfig:
     """
     Reference: https://docs.mistral.ai/api/#operation/createEmbedding
@@ -290,10 +293,14 @@ class OpenAIConfig(BaseConfig):
         api_key: Optional[str] = None,
         api_base: Optional[str] = None,
     ) -> dict:
-        return {
-            "Authorization": f"Bearer {api_key}",
-            **headers,
-        }
+        if is_azure_ai_model(api_base):
+            headers["api-key"] = api_key
+            return headers
+        else:
+            return {
+                "Authorization": f"Bearer {api_key}",
+                **headers,
+            }
 
     def get_model_response_iterator(
         self,
